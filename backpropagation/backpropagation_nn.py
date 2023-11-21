@@ -99,8 +99,7 @@ class LossCategoricalCrossentropy(Loss):
         return -np.log(correct_confidences)
 
     def backward(self, derivated_values, target_values):
-        #Number of samples
-        samples = len(derivated_values)
+        number_of_samples = len(derivated_values)
         
         #Number of labels in every sample
         #Using the first line to count
@@ -112,3 +111,6 @@ class LossCategoricalCrossentropy(Loss):
             
         #Calculate gradient
         self.derivated_inputs = -(target_values / derivated_values)
+        
+        #Normalize gradient
+        self.derivated_inputs = self.derivated_inputs / number_of_samples

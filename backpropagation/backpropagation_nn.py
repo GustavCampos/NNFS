@@ -1,14 +1,10 @@
 import numpy as np
 
-class DenseLayer:
+class Layer:
     def __init__(self, inputs_number:int, neurons_number:int) -> None:
         #Create simple weights and biases
         self.weights = np.ones(shape=(inputs_number, neurons_number))
         self.biases = np.zeros(shape=(1, neurons_number))
-        
-    def relu(self, output_matrix: np.array) -> np.array:
-        #ReLU activation function
-        return np.maximum(0, output_matrix)
     
     def foward(self, inputs:np.array) -> np.array:
         #Save inputs for backpropagation
@@ -19,6 +15,19 @@ class DenseLayer:
         
         return self.output
     
+    def backward(self, derivated_values):
+        #Gradient on parameters
+        self.derivated_weights = np.dot(self.last_inputs.T, derivated_values)
+        self.derivated_biases = np.sum(derivated_values, axis=0, keepdims=True)
+        
+        #Gradient on values
+        self.derivated_inputs = np.dot(derivated_values, self.weights.T)  
+     
+class DenseLayer(Layer):
+    def relu(self, output_matrix: np.array) -> np.array:
+        #ReLU activation function
+        return np.maximum(0, output_matrix)
+    
     def foward_relu(self, inputs:np.array) -> None:
         #Save foward result to ReLU backpropagation
         self.last_inputs_relu = self.foward(inputs)
@@ -28,14 +37,6 @@ class DenseLayer:
         
         return self.output
     
-    def backward(self, derivated_values):
-        #Gradient on parameters
-        self.derivated_weights = np.dot(self.last_inputs.T, derivated_values)
-        self.derivated_biases = np.sum(derivated_values, axis=0, keepdims=True)
-        
-        #Gradient on values
-        self.derivated_inputs = np.dot(derivated_values, self.weights.T)
-        
     def backward_relu(self, derivated_values):
         self.backward(derivated_values)
         
@@ -44,6 +45,30 @@ class DenseLayer:
         
         self.derivated_inputs[self.last_inputs_relu <= 0] = 0
         
+class OutputLayerWithSoftmax(Layer):
+    def foward(self, inputs: np.array) -> np.array:
+        #Get unnormalized probabilities
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        
+        #Normalize them for each sample
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        
+        self.output = probabilities
+        
+    def backward(self, derivated_values: np.array):
+        #Create uninitialized array
+        self.derivated_inputs = np.empty_like(derivated_values)
+        
+        #Enumerate ouputs and gradients
+        for index, (output_value, derivated_value) in enumerate(zip(self.output, derivated_values)):
+            #Flatten output array
+            output_value = output_value.reshape(-1, 1)
+            
+            #Calculate Jacobian matrix of the output
+            jacobian_matrix = np.diagflat(output_value) - np.dot(output_value, output_value.T)
+            
+            #Calculate sample-wise gradient and add it to the array of sample gradients
+            self.derivated_inputs[index] = np.dot(jacobian_matrix, derivated_value) 
         
         
 class Loss():

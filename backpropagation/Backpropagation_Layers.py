@@ -1,5 +1,5 @@
 import numpy as np
-from Backpropagation_Loss import LossCategoricalCrossentropy as lcc
+
 
 class Layer:
     def __init__(self, inputs_number:int, neurons_number:int) -> None:
@@ -16,7 +16,7 @@ class Layer:
         
         return self.output
     
-    def backward(self, derivated_values):
+    def backward(self, derivated_values: np.array):        
         #Gradient on parameters
         self.derivated_weights = np.dot(self.last_inputs.T, derivated_values)
         self.derivated_biases = np.sum(derivated_values, axis=0, keepdims=True)
@@ -49,10 +49,10 @@ class DenseLayer(Layer):
 class OutputLayerWithSoftmax(Layer):
     def foward(self, inputs: np.array) -> np.array:
         #Save inputs for backpropagation
-        self.last_inputs = inputs
+        self.last_inputs = super().foward(inputs)
         
         #Get unnormalized probabilities
-        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        exp_values = np.exp(self.last_inputs - np.max(self.last_inputs, axis=1, keepdims=True))
         
         #Normalize them for each sample
         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)

@@ -4,7 +4,9 @@ import numpy as np
 class Layer:
     def __init__(self, inputs_number:int, neurons_number:int) -> None:
         #Create simple weights and biases
-        self.weights = np.ones(shape=(inputs_number, neurons_number))
+        random_matrix = np.random.default_rng(1).standard_normal(size=(inputs_number, neurons_number))
+        
+        self.weights = 0.01 * random_matrix
         self.biases = np.zeros(shape=(1, neurons_number))
     
     def foward(self, inputs:np.array) -> np.array:
@@ -40,19 +42,19 @@ class DenseLayer(Layer):
     
     def backward(self, derivated_values):        
         self.derivated_inputs = derivated_values.copy()
-        # Zero gradient where input values were negative
         
+        # Zero gradient where input values were negative
         self.derivated_inputs[self.last_inputs_relu <= 0] = 0
         
         super().backward(self.derivated_inputs)
         
 class OutputLayerWithSoftmax(Layer):
     def foward(self, inputs: np.array) -> np.array:
-        #Save inputs for backpropagation
-        self.last_inputs = super().foward(inputs)
-        
+        #Running simple foward
+        self.last_inputs_softmax = super().foward(inputs)
+                
         #Get unnormalized probabilities
-        exp_values = np.exp(self.last_inputs - np.max(self.last_inputs, axis=1, keepdims=True))
+        exp_values = np.exp(self.output - np.max(self.output, axis=1, keepdims=True))
         
         #Normalize them for each sample
         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)

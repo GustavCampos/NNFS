@@ -18,8 +18,7 @@ loss_obj = LossCategoricalCrossentropy()
 #Create optimizer
 optmizer = OptmizerSGD()
 
-for epoch in range(10001):
-
+for epoch in range(100_000_001):
     ###NN Foward###
     hidden_layer.foward(inputs)
     output_layer.foward(hidden_layer.output)
@@ -28,11 +27,11 @@ for epoch in range(10001):
     #Print progress every 100 iterations
     if not epoch % 100:
         accuracy = loss_obj.calculate_accuracy(output_layer.output, target_values) 
-        print(f'Epoch: {epoch}')
-        print(f'Accuracy: {accuracy:.3f}')
-        print(f'Loss: {loss:.3f}')
+        print(f'epoch: {epoch}, acc: {accuracy:.3f}, loss: {loss:.3f}')
 
     ###NN Backward###
+    # loss_obj.backward(output_layer.output, target_values)
+    # output_layer.backward(loss_obj.derivated_inputs)
     output_layer.fast_backward(output_layer.output, target_values)
     hidden_layer.backward(output_layer.derivated_inputs)
 

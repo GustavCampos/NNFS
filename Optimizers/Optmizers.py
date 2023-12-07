@@ -9,5 +9,5 @@ class OptmizerSGD:
         
     #update parameters
     def update_params(self, layer: Layer):
-        layer.weights = -self.learning_rate * layer.derivated_weights
-        layer.biases = -self.learning_rate * layer.derivated_biases
+        layer.weights += -self.learning_rate * layer.derivated_weights
+        layer.biases += -self.learning_rate * layer.derivated_biases

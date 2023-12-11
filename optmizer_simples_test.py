@@ -18,7 +18,7 @@ loss_obj = LossCategoricalCrossentropy()
 #Create optimizer
 optmizer = OptmizerSGD()
 
-for epoch in range(100_000_001):
+for epoch in range(10_001):
     ###NN Foward###
     hidden_layer.foward(inputs)
     output_layer.foward(hidden_layer.output)

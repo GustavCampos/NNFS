@@ -3,7 +3,7 @@ from Backpropagation.Backpropagation_Layers import Layer
 
 class OptmizerSGD:
     # Initialize optimizer - set settings,
-# learning rate of 1. is default for this optimizer
+    # learning rate of 1. is default for this optimizer
     def __init__(self, learning_rate:int=1.0) -> None:
         self.learning_rate = learning_rate
         

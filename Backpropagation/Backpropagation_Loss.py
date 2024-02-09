@@ -1,8 +1,8 @@
 import numpy as np
-
+from Backpropagation_Layers import Layer
 
 class Loss():
-    def calculate(self, nn_predictions:np.array, target_values:np.array) -> float:
+    def calculate_loss(self, nn_predictions:np.array, target_values:np.array) -> float:
         sample_loses = self.foward(nn_predictions, target_values)
         data_loss = np.mean(sample_loses)
 
@@ -27,6 +27,29 @@ class Loss():
             target_values = np.argmax(target_values, axis=1)
             
         return np.mean(predictions_categorical_label == target_values)
+    
+    def calculate_regularization_penalty(self, layer: Layer) -> float:
+        regularization_penalty = 0
+        
+        #L1 regularization________________________________________________________________
+        #Weights
+        if layer.weight_regularizer_l1 > 0:
+            regularization_penalty += layer.weight_regularizer_l1 * np.sum(np.absolute(layer.weights))
+            
+        #Biases
+        if layer.bias_regularizer_l1 > 0:
+            regularization_penalty += layer.bias_regularizer_l1 * np.sum(np.absolute(layer.biases))
+            
+        #L2 regularization________________________________________________________________
+        #Weights
+        if layer.weight_regularizer_l2 > 0:
+            regularization_penalty += layer.weight_regularizer_l2 * np.sum(layer.weights * layer.weights)
+ 
+        #Biases
+        if layer.bias_regularizer_l2 > 0:
+            regularization_penalty += layer.bias_regularizer_l2 * np.sum(layer.biases * layer.biases)
+            
+        return regularization_penalty
     
 class LossCategoricalCrossentropy(Loss):
     def foward(self, nn_prediction:np.array, target_values:np.array) -> np.array:

@@ -2,12 +2,21 @@ import numpy as np
 
 
 class Layer:
-    def __init__(self, inputs_number:int, neurons_number:int) -> None:
+    def __init__(self, inputs_number:int, neurons_number:int, 
+                 weight_regularizer_l1=0, weight_regularizer_l2=0,
+                 bias_regularizer_l1=0, bias_regularizer_l2=0) -> None:
         #Create simple weights and biases
         random_matrix = np.random.default_rng(1).standard_normal(size=(inputs_number, neurons_number))
         
         self.weights = 0.01 * random_matrix
         self.biases = np.zeros(shape=(1, neurons_number))
+        
+        #Set regularization strength
+        self.weight_regularizer_l1 = weight_regularizer_l1
+        self.weight_regularizer_l2 = weight_regularizer_l2
+        self.bias_regularizer_l1 = bias_regularizer_l1
+        self.bias_regularizer_l2 = bias_regularizer_l2
+        
     
     def foward(self, inputs:np.array) -> np.array:
         #Save inputs for backpropagation

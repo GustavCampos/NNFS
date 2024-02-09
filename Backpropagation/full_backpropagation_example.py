@@ -19,7 +19,7 @@ loss_obj = LossCategoricalCrossentropy()
 ### Running NN ###
 hidden_layer.foward(inputs)
 output_layer.foward(hidden_layer.output)
-loss = loss_obj.calculate(output_layer.output, target_values)
+loss = loss_obj.calculate_loss(output_layer.output, target_values)
 accuracy = loss_obj.calculate_accuracy(output_layer.output, target_values)
 
 #NN output

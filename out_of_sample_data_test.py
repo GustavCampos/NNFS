@@ -16,7 +16,8 @@ output_layer = OutputLayerWithSoftmax(64, 3)
 loss_obj = LossCategoricalCrossentropy()
 
 #Create optimizer
-optmizer = OptmizerAdam(learning_rate=0.05, decay=5e-7)
+optmizer = OptmizerAdam(learning_rate=1e-3, decay=1e-4)
+# optmizer = OptmizerSGD(learning_rate=1, decay=.1)
 
 for epoch in range(50_001):
     ###NN Foward###
@@ -41,3 +42,22 @@ for epoch in range(50_001):
     optmizer.update_params(hidden_layer)
     optmizer.update_params(output_layer)
     optmizer.post_update_params()
+    
+print("Training complete")
+
+
+#Validate the model -------------------------------
+
+#Create out of sample dataset
+oos_inputs, oos_target_values = spiral_data(samples=100, classes=3)
+
+#Perform a foward pass of our testing data
+hidden_layer.foward(oos_inputs)
+output_layer.foward(hidden_layer.output)
+
+#Calculate loss and accuracy of  predictions
+loss = loss_obj.calculate_loss(output_layer.output, oos_target_values)
+accuracy = loss_obj.calculate_accuracy(output_layer.output, oos_target_values)
+
+print(f'validation, acc: {accuracy:.3f}, loss: {loss:.3f}')
+

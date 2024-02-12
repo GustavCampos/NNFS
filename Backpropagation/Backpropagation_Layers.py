@@ -32,6 +32,33 @@ class Layer:
         self.derivated_weights = np.dot(self.last_inputs.T, derivated_values)
         self.derivated_biases = np.sum(derivated_values, axis=0, keepdims=True)
         
+        #Gradients on regularization
+        #L1 regularization _____________________________________________________________
+        if self.weight_regularizer_l1 > 0:
+            derivated_weights_l1 = np.ones_like(self.weights)
+            
+            #Set to -1 every place in self.weights < 0
+            derivated_weights_l1[self.weights < 0] = -1
+            
+            #Add product to the gradients
+            self.derivated_weights += self.weight_regularizer_l1 * derivated_weights_l1
+            
+        if self.bias_regularizer_l1 > 0:
+            derivated_biases_l1 = np.ones_like(self.biases)
+            
+            #Set to -1 every place in self.weights < 0
+            derivated_biases_l1[self.biases < 0] = -1
+            
+            #Add product to the gradients
+            self.derivated_biases += self.bias_regularizer_l1 * derivated_biases_l1
+            
+        #L2 Regularization_______________________________________________________________
+        if self.weight_regularizer_l2 > 0:
+            self.derivated_weights += (2 * self.weight_regularizer_l2 * self.weights)
+            
+        if self.bias_regularizer_l2 > 0:
+            self.derivated_biases += (2 * self.bias_regularizer_l2 * self.biases)
+            
         #Gradient on values
         self.derivated_inputs = np.dot(derivated_values, self.weights.T)  
      

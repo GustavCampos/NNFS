@@ -4,13 +4,14 @@ from Backpropagation.Backpropagation_Layers import DenseLayer, OutputLayerWithSo
 from Optimizers.Optmizers import OptmizerAdam, OptmizerSGD, OptmizerAdaGrad, OptmizerRMSProp
 
 
-inputs, target_values = spiral_data(samples=100, classes=3)
+inputs, target_values = spiral_data(samples=1000, classes=3)
 
 #Create Dense Layer with 2 input features and 64 output values (neurons)
-hidden_layer = DenseLayer(2, 64)
+hidden_layer = DenseLayer(2, 512, weight_regularizer_l2=5e-4, bias_regularizer_l2=5e-4)
+
 
 #Create a output layer with 64 input features and 3 output values (neurons)
-output_layer = OutputLayerWithSoftmax(64, 3)
+output_layer = OutputLayerWithSoftmax(512, 3)
 
 #Create Loss Object
 loss_obj = LossCategoricalCrossentropy()
@@ -19,17 +20,20 @@ loss_obj = LossCategoricalCrossentropy()
 optmizer = OptmizerAdam(learning_rate=1e-3, decay=1e-4)
 # optmizer = OptmizerSGD(learning_rate=1, decay=.1)
 
-for epoch in range(50_001):
+for epoch in range(10_001):
     ###NN Foward###
     hidden_layer.foward(inputs)
     output_layer.foward(hidden_layer.output)
-    loss = loss_obj.calculate_loss(output_layer.output, target_values)
+    data_loss = loss_obj.calculate_loss(output_layer.output, target_values)
+    loss_penalty = loss_obj.calculate_regularization_penalty(hidden_layer)
+    output_layer_penalty = loss_obj.calculate_regularization_penalty(output_layer)
+    loss = data_loss + loss_penalty + output_layer_penalty
     
     #Print progress every 100 iterations
     if not epoch % 100:
         lr = round(optmizer.current_learning_rate, 4)
         accuracy = loss_obj.calculate_accuracy(output_layer.output, target_values) 
-        print(f'epoch: {epoch}, acc: {accuracy:.3f}, loss: {loss:.3f}, learning rate: {lr}')
+        print(f'epoch: {epoch}, acc: {accuracy:.3f}, data_loss: {data_loss:.3f}, loss_penalty: {loss_penalty:.3f}, loss: {loss:.3f}, learning rate: {lr}')
 
     ###NN Backward###
     # loss_obj.backward(output_layer.output, target_values)

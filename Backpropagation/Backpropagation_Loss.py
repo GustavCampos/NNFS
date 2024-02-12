@@ -1,5 +1,5 @@
 import numpy as np
-from Backpropagation_Layers import Layer
+from Backpropagation.Backpropagation_Layers import Layer
 
 class Loss():
     def calculate_loss(self, nn_predictions:np.array, target_values:np.array) -> float:
